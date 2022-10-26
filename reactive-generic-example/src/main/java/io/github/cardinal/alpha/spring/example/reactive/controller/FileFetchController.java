@@ -23,25 +23,18 @@
  */
 package io.github.cardinal.alpha.spring.example.reactive.controller;
 
-import io.github.cardinal.alpha.spring.example.reactive.entity.File;
 import io.github.cardinal.alpha.spring.example.reactive.exception.StreamException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import io.github.cardinal.alpha.spring.example.reactive.repository.FileRepository;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.sql.Blob;
-import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.apache.commons.io.IOUtils;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DefaultDataBufferFactory;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import reactor.core.publisher.Mono;
