@@ -8,7 +8,7 @@
         <version>2.7.4</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
-    <groupId>io.github.cardinal.alpha.spring.example</groupId>
+    <groupId>io.cardinal.alpha.spring.example</groupId>
     <artifactId>mvc-generic-example</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>mvc-generic-example</name>
@@ -52,7 +52,7 @@
         </dependency>
                 
         <dependency>
-            <groupId>io.github.cardinal.alpha.spring.generic</groupId>
+            <groupId>io.cardinal.alpha.spring.generic</groupId>
             <artifactId>generic-type-spring-boot-starter</artifactId>
             <version>1.0.0</version>
         </dependency>
