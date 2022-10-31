@@ -14,7 +14,7 @@
     <name>mvc-generic-example</name>
     <description>Demo Springboot MVC with generic type architecture</description>
     <properties>
-        <java.version>17</java.version>
+        <java.version>1.8</java.version>
         <org.mapstruct.version>1.5.3.Final</org.mapstruct.version>
     </properties>
     <dependencies>
