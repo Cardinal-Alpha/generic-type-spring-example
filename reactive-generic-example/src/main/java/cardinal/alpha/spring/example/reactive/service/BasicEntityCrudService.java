@@ -23,8 +23,7 @@
  */
 package cardinal.alpha.spring.example.reactive.service;
 
-import cardinal.alpha.spring.example.reactive.entity.Profile;
-import cardinal.alpha.spring.example.reactive.entity.Book;
+import cardinal.alpha.spring.example.reactive.entity.*;
 import cardinal.alpha.spring.example.reactive.entity.type.Updatable;
 import cardinal.alpha.spring.example.reactive.mapping.type.UpdateMapping;
 import cardinal.alpha.spring.example.reactive.service.type.CrudService;
@@ -41,6 +40,8 @@ import reactor.core.publisher.Mono;
  */
 @GenericComponent(typeParameters = {Book.class, Integer.class})
 @GenericComponent(typeParameters = {Profile.class, Integer.class})
+@GenericComponent(typeParameters = {File.class, Integer.class})
+@GenericComponent(typeParameters = {Log.class, Integer.class})
 public class BasicEntityCrudService<T extends Updatable<ID>, ID> implements CrudService<T, T, ID>{
     
     @Autowired

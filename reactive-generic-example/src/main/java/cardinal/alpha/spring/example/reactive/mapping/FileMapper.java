@@ -27,7 +27,8 @@ import cardinal.alpha.spring.example.reactive.entity.File;
 import cardinal.alpha.spring.example.reactive.entityDown.FileDownload;
 import cardinal.alpha.spring.example.reactive.entityUp.FileUpload;
 import cardinal.alpha.spring.example.reactive.exception.StreamException;
-import cardinal.alpha.spring.example.reactive.mapping.type.RestEntityMapper;
+import cardinal.alpha.spring.example.reactive.mapping.type.BaseEntityMapper;
+import cardinal.alpha.spring.example.reactive.mapping.type.RestMapper;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.nio.file.Files;
@@ -44,7 +45,7 @@ import org.springframework.http.codec.multipart.FilePart;
  * @author Cardinal Alpha <renaldi96.aldi@gmail.com>
  */
 @Mapper(componentModel = "spring")
-public abstract class FileMapper extends RestEntityMapper<File, FileUpload, FileDownload>{
+public abstract class FileMapper extends BaseEntityMapper<File> implements RestMapper<File, FileUpload, FileDownload>{
 
     @Override
     public abstract File mapUpload(FileUpload data);
@@ -77,8 +78,8 @@ public abstract class FileMapper extends RestEntityMapper<File, FileUpload, File
                         }catch(Throwable ex){
                             throw new StreamException("Something wrong when upload file", ex);
                         }
-                    })
-                    .subscribe();
+            })
+            .subscribe();
         }catch(Throwable ex){
             throw new StreamException("Something wrong when upload file", ex);
         }

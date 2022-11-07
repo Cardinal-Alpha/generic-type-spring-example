@@ -27,7 +27,8 @@ import cardinal.alpha.spring.example.mvc.entity.File;
 import cardinal.alpha.spring.example.mvc.entityDown.FileDownload;
 import cardinal.alpha.spring.example.mvc.entityUp.FileUpload;
 import cardinal.alpha.spring.example.mvc.exception.StreamException;
-import cardinal.alpha.spring.example.mvc.mapping.type.RestEntityMapper;
+import cardinal.alpha.spring.example.mvc.mapping.type.BaseEntityMapper;
+import cardinal.alpha.spring.example.mvc.mapping.type.RestMapper;
 import org.hibernate.engine.jdbc.BlobProxy;
 import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
@@ -40,7 +41,7 @@ import org.springframework.web.multipart.MultipartFile;
  * @author Cardinal Alpha <renaldi96.aldi@gmail.com>
  */
 @Mapper(componentModel = "spring")
-public abstract class FileMapper extends RestEntityMapper<File, FileUpload, FileDownload>{
+public abstract class FileMapper extends BaseEntityMapper<File> implements RestMapper<File, FileUpload, FileDownload>{
 
     @Override
     @Mapping(source = "upload.originalFilename", target = "name")

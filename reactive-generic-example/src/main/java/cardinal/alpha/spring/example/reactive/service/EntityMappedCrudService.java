@@ -29,13 +29,12 @@ import cardinal.alpha.spring.example.reactive.entity.type.Updatable;
 import cardinal.alpha.spring.example.reactive.entityDown.FileDownload;
 import cardinal.alpha.spring.example.reactive.entityUp.LogUpload;
 import cardinal.alpha.spring.example.reactive.entityUp.FileUpload;
-import cardinal.alpha.spring.example.reactive.mapping.type.RestEntityMapper;
+import cardinal.alpha.spring.example.reactive.mapping.type.RestMapper;
 import cardinal.alpha.spring.example.reactive.service.type.CrudService;
 import cardinal.alpha.spring.generic.bind.GenericComponent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.JpaRepository;
 import reactor.core.publisher.Mono;
 
 /**
@@ -47,55 +46,44 @@ import reactor.core.publisher.Mono;
 public class EntityMappedCrudService<T extends Updatable<ID>, ID, UpT, DownT> implements CrudService<UpT, DownT, ID>{
     
     @Autowired
-    private JpaRepository<T, ID> repository;
+    private BasicEntityCrudService<T, ID> svc;
     
     @Autowired
-    private RestEntityMapper<T, UpT, DownT> mapper;
+    private RestMapper<T, UpT, DownT> mapper;
     
     @Override
     public Mono<DownT> get(Mono<ID> id){
-        return id.map(i-> mapper.mapDownload(repository.findById(i).get()));
+        return svc.get(id)
+                    .map(mapper::mapDownload);
     }
     
     @Override
     public Mono<Page<DownT>> list(Mono<Pageable> paginate){
-        return paginate.map(p-> repository.findAll(p)
-                                .map(e -> mapper.mapDownload(e)));
+        return svc.list(paginate)
+                    .map(p -> p.map(mapper::mapDownload)
+                    );
     }
     
     @Override
     public Mono<DownT> create(Mono<UpT> entity){
-        return entity.map(mapper::mapUpload)
-                    .map(e->{
-                        if(e.getId() != null)
-                            e.setId(null);
-                        return e;
-                    })
-                    .map(repository::save)
+        return svc.create(entity.map(mapper::mapUpload)
+                            .map(e->{
+                                if(e.getId() != null)
+                                    e.setId(null);
+                                return e;
+                            }))
                     .map(mapper::mapDownload);
     }
     
     @Override
     public Mono<DownT> update(Mono<ID> oldEntityId, Mono<UpT> entityUpdate){
-        return oldEntityId.zipWith(entityUpdate, (i, u)-> new UpdateHolder<>(i, u))
-                        .map(u->{
-                            T oldEntity = repository.findById(u.getId()).get(),
-                                update = mapper.mapUpload(u.getUpdate());
-                            if(update.getId() != null)
-                                update.setId(null);
-                            mapper.updateEntity(update, oldEntity);
-                            return oldEntity;
-                        })
-                        .map(repository::save)
-                        .map(mapper::mapDownload);
+        return svc.update(oldEntityId, entityUpdate.map(mapper::mapUpload))
+                    .map(mapper::mapDownload);
     }
     
     @Override
     public Mono<ID>delete(Mono<ID> id){
-        return id.map(i->{
-                        repository.deleteById(i);
-                        return i;
-                    });
+        return svc.delete(id);
     }
     
 }

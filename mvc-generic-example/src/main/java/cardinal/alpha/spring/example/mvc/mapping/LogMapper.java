@@ -25,7 +25,8 @@ package cardinal.alpha.spring.example.mvc.mapping;
 
 import cardinal.alpha.spring.example.mvc.entity.Log;
 import cardinal.alpha.spring.example.mvc.entityUp.LogUpload;
-import cardinal.alpha.spring.example.mvc.mapping.type.RestEntityMapper;
+import cardinal.alpha.spring.example.mvc.mapping.type.BaseEntityMapper;
+import cardinal.alpha.spring.example.mvc.mapping.type.RestMapper;
 import org.mapstruct.Mapper;
 
 /**
@@ -33,6 +34,6 @@ import org.mapstruct.Mapper;
  * @author Cardinal Alpha <renaldi96.aldi@gmail.com>
  */
 @Mapper(componentModel = "spring")
-public abstract class LogMapper extends RestEntityMapper<Log, LogUpload, Log>{
+public abstract class LogMapper extends BaseEntityMapper<Log> implements RestMapper<Log, LogUpload, Log>{
     
 }

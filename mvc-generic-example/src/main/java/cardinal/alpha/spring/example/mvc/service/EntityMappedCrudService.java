@@ -29,13 +29,12 @@ import cardinal.alpha.spring.example.mvc.entity.type.Updatable;
 import cardinal.alpha.spring.example.mvc.entityDown.FileDownload;
 import cardinal.alpha.spring.example.mvc.entityUp.LogUpload;
 import cardinal.alpha.spring.example.mvc.entityUp.FileUpload;
-import cardinal.alpha.spring.example.mvc.mapping.type.RestEntityMapper;
+import cardinal.alpha.spring.example.mvc.mapping.type.RestMapper;
 import cardinal.alpha.spring.example.mvc.service.type.CrudService;
 import cardinal.alpha.spring.generic.bind.GenericComponent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
  *
@@ -46,42 +45,39 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public class EntityMappedCrudService<T extends Updatable<ID>, ID, UpT, DownT> implements CrudService<UpT, DownT, ID>{
     
     @Autowired
-    private JpaRepository<T, ID> repository;
+    protected BasicEntityCrudService<T, ID> basicSvc;
     
     @Autowired
-    private RestEntityMapper<T, UpT, DownT> mapper;
-    
-    
+    protected RestMapper<T, UpT, DownT> mapper;
+
     @Override
-    public DownT get(ID id){
-        return mapper.mapDownload(repository.findById(id).get());
+    public DownT get(ID id) {
+        return mapper.mapDownload(basicSvc.get(id));
     }
-    
+
     @Override
-    public Page<DownT> list(Pageable paginate){
-        return repository.findAll(paginate)
-                        .map(e -> mapper.mapDownload(e));
+    public Page<DownT> list(Pageable paginate) {
+        return basicSvc.list(paginate)
+                    .map(e -> mapper.mapDownload(e));
     }
-    
+
     @Override
-    public void create(UpT data){
-        repository.save(mapper.mapUpload(data));
+    public void create(UpT data) {
+        basicSvc.create(mapper.mapUpload(data));
     }
-    
+
     @Override
-    public DownT update(ID oldEntityId, UpT update){
-        T oldEntity = repository.findById(oldEntityId).get(),
-                entityUpdate = mapper.mapUpload(update);
-        if(entityUpdate.getId() != null)
-            entityUpdate.setId(null);
-        mapper.updateEntity(entityUpdate, oldEntity);
-        return mapper.mapDownload(
-                repository.save(oldEntity));
+    public DownT update(ID oldEntityId, UpT update) {
+        return mapper.mapDownload( 
+                basicSvc.update(
+                        oldEntityId,
+                        mapper.mapUpload(update) )
+        );
     }
-    
+
     @Override
-    public void delete(ID id){
-        repository.deleteById(id);
+    public void delete(ID id) {
+        basicSvc.delete(id);
     }
     
 }
