@@ -1,3 +1,5 @@
+package cardinal.alpha.spring.example.reactive.mapping;
+
 /*
  * The MIT License
  *
@@ -21,12 +23,12 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package cardinal.alpha.spring.example.reactive.mapping;
+
 
 import cardinal.alpha.spring.example.reactive.entity.Log;
 import cardinal.alpha.spring.example.reactive.entityUp.LogUpload;
-import cardinal.alpha.spring.example.reactive.mapping.type.BaseEntityMapper;
 import cardinal.alpha.spring.example.reactive.mapping.type.RestMapper;
+import cardinal.alpha.spring.example.reactive.mapping.type.UpdateMapping;
 import org.mapstruct.Mapper;
 
 /**
@@ -34,6 +36,7 @@ import org.mapstruct.Mapper;
  * @author Cardinal Alpha <renaldi96.aldi@gmail.com>
  */
 @Mapper(componentModel = "spring")
-public abstract class LogMapper extends BaseEntityMapper<Log> implements RestMapper<Log, LogUpload, Log>{
+public abstract class LogMapper implements UpdateMapping<Log>,
+                                            RestMapper<Log, LogUpload, Log>{
     
 }

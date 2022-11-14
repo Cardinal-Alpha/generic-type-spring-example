@@ -24,7 +24,7 @@
 package cardinal.alpha.spring.example.mvc.mapping;
 
 import cardinal.alpha.spring.example.mvc.entity.Profile;
-import cardinal.alpha.spring.example.mvc.mapping.type.BaseEntityMapper;
+import cardinal.alpha.spring.example.mvc.mapping.type.UpdateMapping;
 import org.mapstruct.Mapper;
 
 /**
@@ -32,6 +32,6 @@ import org.mapstruct.Mapper;
  * @author Cardinal Alpha <renaldi96.aldi@gmail.com>
  */
 @Mapper(componentModel = "spring")
-public abstract class ProfileMapper extends BaseEntityMapper<Profile>{
+public abstract class ProfileMapper implements UpdateMapping<Profile>{
     
 }

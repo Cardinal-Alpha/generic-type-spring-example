@@ -23,12 +23,19 @@
  */
 package cardinal.alpha.spring.example.reactive.mapping.type;
 
+import org.mapstruct.BeanMapping;
+import org.mapstruct.MappingTarget;
+import org.mapstruct.NullValueCheckStrategy;
+import org.mapstruct.NullValuePropertyMappingStrategy;
+
 /**
  *
  * @author Cardinal Alpha <renaldi96.aldi@gmail.com>
  */
 public interface UpdateMapping<T> {
     
-    void updateEntity(T updateData, T oldEntity);
+    @BeanMapping(nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS,
+                    nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    void updateEntity(T updateData, @MappingTarget T oldEntity);
     
 }

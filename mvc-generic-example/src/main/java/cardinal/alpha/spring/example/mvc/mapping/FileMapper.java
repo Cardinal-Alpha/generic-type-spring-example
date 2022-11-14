@@ -26,46 +26,28 @@ package cardinal.alpha.spring.example.mvc.mapping;
 import cardinal.alpha.spring.example.mvc.entity.File;
 import cardinal.alpha.spring.example.mvc.entityDown.FileDownload;
 import cardinal.alpha.spring.example.mvc.entityUp.FileUpload;
-import cardinal.alpha.spring.example.mvc.exception.StreamException;
-import cardinal.alpha.spring.example.mvc.mapping.type.BaseEntityMapper;
+import cardinal.alpha.spring.example.mvc.mapping.type.BaseUploadableEntityMapper;
 import cardinal.alpha.spring.example.mvc.mapping.type.RestMapper;
-import org.hibernate.engine.jdbc.BlobProxy;
-import org.mapstruct.AfterMapping;
+import cardinal.alpha.spring.example.mvc.mapping.type.UpdateMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
-import org.springframework.web.multipart.MultipartFile;
 
 /**
  *
  * @author Cardinal Alpha <renaldi96.aldi@gmail.com>
  */
 @Mapper(componentModel = "spring")
-public abstract class FileMapper extends BaseEntityMapper<File> implements RestMapper<File, FileUpload, FileDownload>{
+public abstract class FileMapper extends BaseUploadableEntityMapper implements UpdateMapping<File>,
+                                                                                    RestMapper<File, FileUpload, FileDownload>{
+
+    @Override
+    @Mapping(source = ".", target = "url")
+    public abstract FileDownload mapDownload(File data);
 
     @Override
     @Mapping(source = "upload.originalFilename", target = "name")
     @Mapping(source = "upload.contentType", target = "mime")
+    @Mapping(source = "upload", target = "content")
     public abstract File mapUpload(FileUpload data);
-    
-    @AfterMapping
-    protected void postDownMap(File src, @MappingTarget FileDownload dest){
-        dest.setUrl(
-                String.join("/", "/file", src.getId().toString())
-        );
-    }
-    
-    @AfterMapping
-    protected void postUpload(FileUpload src, @MappingTarget File dest){
-        try{
-            MultipartFile upload = src.getUpload();
-            dest.setContent(BlobProxy.generateProxy(
-                                        upload.getInputStream(),
-                                        upload.getSize() )
-            );
-        }catch(Throwable ex){
-            throw new StreamException("Something wrong when upload file", ex);
-        }
-    }
     
 }

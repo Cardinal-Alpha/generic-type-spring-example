@@ -23,27 +23,23 @@
  */
 package cardinal.alpha.spring.example.mvc.mapping.type;
 
+import cardinal.alpha.spring.example.mvc.entity.File;
 import cardinal.alpha.spring.example.mvc.exception.MappingException;
-import cardinal.alpha.spring.example.mvc.mapping.type.UpdateMapping;
 import java.io.InputStream;
 import java.sql.Blob;
 import org.hibernate.engine.jdbc.BlobProxy;
-import org.mapstruct.BeanMapping;
-import org.mapstruct.MappingTarget;
-import org.mapstruct.NullValueCheckStrategy;
-import org.mapstruct.NullValuePropertyMappingStrategy;
+import org.mapstruct.Mapping;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
  *
  * @author Cardinal Alpha <renaldi96.aldi@gmail.com>
  */
-public abstract class BaseEntityMapper<T> implements UpdateMapping<T>{
-
-    @Override
-    @BeanMapping(nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS,
-                    nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    public abstract void updateEntity(T updateData, @MappingTarget T oldEntity);
+public abstract class BaseUploadableEntityMapper{
+    
+    protected String generateUrl(File src){
+        return String.join("/", "/file", src.getId().toString());
+    }
     
     protected Blob extractFileContent(MultipartFile file){
         try{
@@ -53,5 +49,10 @@ public abstract class BaseEntityMapper<T> implements UpdateMapping<T>{
             throw new MappingException("Something wrong when transform file upload content to database blob", ex);
         }
     }
+    
+    @Mapping(source = "originalFilename", target = "name")
+    @Mapping(source = "contentType", target = "mime")
+    @Mapping(source = ".", target = "content")
+    protected abstract File mapUpload(MultipartFile file);
     
 }

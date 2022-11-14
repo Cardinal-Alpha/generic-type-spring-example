@@ -1,3 +1,5 @@
+package cardinal.alpha.spring.example.reactive.mapping;
+
 /*
  * The MIT License
  *
@@ -21,68 +23,32 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package cardinal.alpha.spring.example.reactive.mapping;
+
 
 import cardinal.alpha.spring.example.reactive.entity.File;
 import cardinal.alpha.spring.example.reactive.entityDown.FileDownload;
 import cardinal.alpha.spring.example.reactive.entityUp.FileUpload;
-import cardinal.alpha.spring.example.reactive.exception.StreamException;
-import cardinal.alpha.spring.example.reactive.mapping.type.BaseEntityMapper;
+import cardinal.alpha.spring.example.reactive.mapping.type.BaseUploadableEntityMapper;
 import cardinal.alpha.spring.example.reactive.mapping.type.RestMapper;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import org.apache.commons.io.IOUtils;
-import org.hibernate.engine.jdbc.BlobProxy;
-import org.mapstruct.AfterMapping;
+import cardinal.alpha.spring.example.reactive.mapping.type.UpdateMapping;
 import org.mapstruct.Mapper;
-import org.mapstruct.MappingTarget;
-import org.springframework.http.codec.multipart.FilePart;
+import org.mapstruct.Mapping;
 
 /**
  *
  * @author Cardinal Alpha <renaldi96.aldi@gmail.com>
  */
 @Mapper(componentModel = "spring")
-public abstract class FileMapper extends BaseEntityMapper<File> implements RestMapper<File, FileUpload, FileDownload>{
+public abstract class FileMapper extends BaseUploadableEntityMapper implements UpdateMapping<File>,
+                                                                                    RestMapper<File, FileUpload, FileDownload>{
 
     @Override
-    public abstract File mapUpload(FileUpload data);
-    
-    @AfterMapping
-    protected void postDownMap(File src, @MappingTarget FileDownload dest){
-        dest.setUrl(
-                String.join("/", "/file", src.getId().toString())
-        );
-    }
-    
-    @AfterMapping
-    protected void postUpload(FileUpload src, @MappingTarget File dest){
-        try{
-            final FilePart upload = src.getUpload();
-            dest.setName(upload.filename());
-            dest.setMime(Files.probeContentType(
-                            Path.of(upload.filename()) )
-            );
-            final ByteArrayOutputStream holder = new ByteArrayOutputStream();
-            upload.content()
-                    .doOnEach(sig->{
-                        try{
-                            if(!sig.isOnComplete())
-                                IOUtils.copy(sig.get().asInputStream(), holder);
-                            else{
-                                ByteArrayInputStream content = new ByteArrayInputStream(holder.toByteArray());
-                                dest.setContent(BlobProxy.generateProxy(content, content.available()));
-                            }
-                        }catch(Throwable ex){
-                            throw new StreamException("Something wrong when upload file", ex);
-                        }
-            })
-            .subscribe();
-        }catch(Throwable ex){
-            throw new StreamException("Something wrong when upload file", ex);
-        }
+    @Mapping(source = ".", target = "url")
+    public abstract FileDownload mapDownload(File data);
+
+    @Override
+    public File mapUpload(FileUpload data){
+        return mapUploadFilePart(data.getUpload());
     }
     
 }

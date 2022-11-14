@@ -30,7 +30,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import cardinal.alpha.spring.example.reactive.repository.FileRepository;
 import java.io.OutputStream;
 import java.sql.Blob;
-import org.apache.commons.io.IOUtils;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DefaultDataBufferFactory;
 import org.springframework.http.MediaType;
@@ -54,7 +53,7 @@ public class FileFetchController {
     
     private void handleStream(Blob input, OutputStream output){
         try{
-            IOUtils.copy(input.getBinaryStream(), output);
+            input.getBinaryStream().transferTo(output);
         }catch(Throwable ex){
             throw new StreamException("Something wrong when stream file download", ex);
         }
