@@ -24,11 +24,14 @@
 package cardinal.alpha.spring.example.reactive.service;
 
 import cardinal.alpha.spring.example.reactive.entity.File;
+import cardinal.alpha.spring.example.reactive.entity.GeoTag;
 import cardinal.alpha.spring.example.reactive.entity.Log;
 import cardinal.alpha.spring.example.reactive.entity.type.Updatable;
 import cardinal.alpha.spring.example.reactive.entityDown.FileDownload;
+import cardinal.alpha.spring.example.reactive.entityDown.GeoTagDownload;
 import cardinal.alpha.spring.example.reactive.entityUp.LogUpload;
 import cardinal.alpha.spring.example.reactive.entityUp.FileUpload;
+import cardinal.alpha.spring.example.reactive.entityUp.GeoTagUpload;
 import cardinal.alpha.spring.example.reactive.mapping.type.RestMapper;
 import cardinal.alpha.spring.example.reactive.service.type.CrudService;
 import cardinal.alpha.spring.generic.bind.GenericComponent;
@@ -43,6 +46,7 @@ import reactor.core.publisher.Mono;
  */
 @GenericComponent(typeParameters = {File.class, Integer.class, FileUpload.class, FileDownload.class})
 @GenericComponent(typeParameters = {Log.class, Integer.class, LogUpload.class, Log.class})
+@GenericComponent(typeParameters = {GeoTag.class, Integer.class, GeoTagUpload.class, GeoTagDownload.class})
 public class EntityMappedCrudService<T extends Updatable<ID>, ID, UpT, DownT> implements CrudService<UpT, DownT, ID>{
     
     @Autowired

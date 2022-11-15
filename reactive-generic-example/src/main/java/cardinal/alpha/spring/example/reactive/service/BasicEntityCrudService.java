@@ -42,6 +42,7 @@ import reactor.core.publisher.Mono;
 @GenericComponent(typeParameters = {Profile.class, Integer.class})
 @GenericComponent(typeParameters = {File.class, Integer.class})
 @GenericComponent(typeParameters = {Log.class, Integer.class})
+@GenericComponent(typeParameters = {GeoTag.class, Integer.class})
 public class BasicEntityCrudService<T extends Updatable<ID>, ID> implements CrudService<T, T, ID>{
     
     @Autowired

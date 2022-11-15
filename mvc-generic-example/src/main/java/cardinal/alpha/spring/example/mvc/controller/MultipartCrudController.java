@@ -24,7 +24,9 @@
 package cardinal.alpha.spring.example.mvc.controller;
 
 import cardinal.alpha.spring.example.mvc.entityDown.FileDownload;
+import cardinal.alpha.spring.example.mvc.entityDown.GeoTagDownload;
 import cardinal.alpha.spring.example.mvc.entityUp.FileUpload;
+import cardinal.alpha.spring.example.mvc.entityUp.GeoTagUpload;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -38,6 +40,7 @@ import cardinal.alpha.spring.generic.bind.GenericRestController;
  * @author Cardinal Alpha <renaldi96.aldi@gmail.com> 
  */
 @GenericRestController(typeParameters = {FileUpload.class, FileDownload.class, Integer.class}, path = "/api/file")
+@GenericRestController(typeParameters = {GeoTagUpload.class, GeoTagDownload.class, Integer.class}, path = "/api/geotag")
 public class MultipartCrudController<UpT, DownT, ID> extends BaseCrudController<UpT, DownT, ID>{
     
     @Override

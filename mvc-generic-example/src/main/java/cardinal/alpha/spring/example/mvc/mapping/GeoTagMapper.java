@@ -21,67 +21,60 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package cardinal.alpha.spring.example.mvc.service;
+package cardinal.alpha.spring.example.mvc.mapping;
 
 import cardinal.alpha.spring.example.mvc.entity.File;
 import cardinal.alpha.spring.example.mvc.entity.GeoTag;
-import cardinal.alpha.spring.example.mvc.entity.Log;
-import cardinal.alpha.spring.example.mvc.entity.type.Updatable;
+import cardinal.alpha.spring.example.mvc.entity.Location;
 import cardinal.alpha.spring.example.mvc.entityDown.FileDownload;
 import cardinal.alpha.spring.example.mvc.entityDown.GeoTagDownload;
-import cardinal.alpha.spring.example.mvc.entityUp.LogUpload;
 import cardinal.alpha.spring.example.mvc.entityUp.FileUpload;
 import cardinal.alpha.spring.example.mvc.entityUp.GeoTagUpload;
+import cardinal.alpha.spring.example.mvc.mapping.type.BaseUploadableEntityMapper;
 import cardinal.alpha.spring.example.mvc.mapping.type.RestMapper;
-import cardinal.alpha.spring.example.mvc.service.type.CrudService;
-import cardinal.alpha.spring.generic.bind.GenericComponent;
+import cardinal.alpha.spring.example.mvc.mapping.type.UpdateMapping;
+import org.mapstruct.BeanMapping;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
+import org.mapstruct.NullValueCheckStrategy;
+import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 
 /**
  *
  * @author Cardinal Alpha <renaldi96.aldi@gmail.com>
  */
-@GenericComponent(typeParameters = {File.class, Integer.class, FileUpload.class, FileDownload.class})
-@GenericComponent(typeParameters = {Log.class, Integer.class, LogUpload.class, Log.class})
-@GenericComponent(typeParameters = {GeoTag.class, Integer.class, GeoTagUpload.class, GeoTagDownload.class})
-public class EntityMappedCrudService<T extends Updatable<ID>, ID, UpT, DownT> implements CrudService<UpT, DownT, ID>{
+@Mapper(componentModel = "spring")
+public abstract class GeoTagMapper extends BaseUploadableEntityMapper implements UpdateMapping<GeoTag>,
+                                                                                    RestMapper<GeoTag, GeoTagUpload, GeoTagDownload>{
     
     @Autowired
-    protected BasicEntityCrudService<T, ID> basicSvc;
+    private UpdateMapping<Location> locationUpdater;
     
     @Autowired
-    protected RestMapper<T, UpT, DownT> mapper;
-
-    @Override
-    public DownT get(ID id) {
-        return mapper.mapDownload(basicSvc.get(id));
+    private UpdateMapping<File> fileUpdater;
+    
+    @Autowired
+    private RestMapper<File, FileUpload, FileDownload> fileMapper;
+    
+    protected void locationTransfer(Location src, @MappingTarget Location dest){
+        locationUpdater.updateEntity(src, dest);
+    }
+    
+    protected void fileTransfer(File src, @MappingTarget File dest){
+        fileUpdater.updateEntity(src, dest);
     }
 
     @Override
-    public Page<DownT> list(Pageable paginate) {
-        return basicSvc.list(paginate)
-                    .map(e -> mapper.mapDownload(e));
-    }
-
-    @Override
-    public void create(UpT data) {
-        basicSvc.create(mapper.mapUpload(data));
-    }
-
-    @Override
-    public DownT update(ID oldEntityId, UpT update) {
-        return mapper.mapDownload( 
-                basicSvc.update(
-                        oldEntityId,
-                        mapper.mapUpload(update) )
-        );
-    }
-
-    @Override
-    public void delete(ID id) {
-        basicSvc.delete(id);
+    @BeanMapping(nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS,
+                    nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    @Mapping(source = "file", target = "file")
+    @Mapping(source = "location", target = "location")
+    public abstract void updateEntity(GeoTag updateData, @MappingTarget GeoTag oldEntity);
+    
+    protected FileDownload mapDownload(File src){
+        return fileMapper.mapDownload(src);
     }
     
 }
