@@ -29,8 +29,10 @@ import cardinal.alpha.spring.example.mvc.entityUp.FileUpload;
 import cardinal.alpha.spring.example.mvc.mapping.type.BaseUploadableEntityMapper;
 import cardinal.alpha.spring.example.mvc.mapping.type.RestMapper;
 import cardinal.alpha.spring.example.mvc.mapping.type.UpdateMapping;
+import org.mapstruct.BeforeMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 
 /**
  *
@@ -49,5 +51,11 @@ public abstract class FileMapper extends BaseUploadableEntityMapper implements U
     @Mapping(source = "upload.contentType", target = "mime")
     @Mapping(source = "upload", target = "content")
     public abstract File mapUpload(FileUpload data);
+    
+    @BeforeMapping
+    protected void prepareFileUpdate(File src, @MappingTarget File dest){
+        if(src.getName().length() == 0)
+            updateEntity(dest, src);
+    }
     
 }

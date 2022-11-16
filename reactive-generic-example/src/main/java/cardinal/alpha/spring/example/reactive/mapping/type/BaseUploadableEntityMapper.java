@@ -29,6 +29,9 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.hibernate.engine.jdbc.BlobProxy;
 import org.springframework.http.codec.multipart.FilePart;
 
@@ -39,10 +42,16 @@ import org.springframework.http.codec.multipart.FilePart;
 public abstract class BaseUploadableEntityMapper{
     
     protected String generateUrl(File src){
-        return String.join("/", "/file", src.getId().toString());
+        try {
+            if(src.getContent().length() > 0)
+                return String.join("/", "/file", src.getId().toString());
+        } catch (SQLException ex) {
+            Logger.getLogger(BaseUploadableEntityMapper.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
     }
     
-    protected File mapUploadFilePart(FilePart upload){
+    public File mapUploadFilePart(FilePart upload){
         final ByteArrayOutputStream holder = new ByteArrayOutputStream();
         try{
             upload.content()

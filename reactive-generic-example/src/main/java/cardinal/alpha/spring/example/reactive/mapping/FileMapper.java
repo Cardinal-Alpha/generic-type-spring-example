@@ -31,8 +31,10 @@ import cardinal.alpha.spring.example.reactive.entityUp.FileUpload;
 import cardinal.alpha.spring.example.reactive.mapping.type.BaseUploadableEntityMapper;
 import cardinal.alpha.spring.example.reactive.mapping.type.RestMapper;
 import cardinal.alpha.spring.example.reactive.mapping.type.UpdateMapping;
+import org.mapstruct.BeforeMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 
 /**
  *
@@ -49,6 +51,12 @@ public abstract class FileMapper extends BaseUploadableEntityMapper implements U
     @Override
     public File mapUpload(FileUpload data){
         return mapUploadFilePart(data.getUpload());
+    }
+    
+    @BeforeMapping
+    protected void prepareFileUpdate(File src, @MappingTarget File dest){
+        if(src.getName().length() == 0)
+            updateEntity(dest, src);
     }
     
 }

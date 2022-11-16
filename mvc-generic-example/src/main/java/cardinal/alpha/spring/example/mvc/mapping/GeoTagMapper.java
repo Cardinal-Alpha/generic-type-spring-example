@@ -23,58 +23,19 @@
  */
 package cardinal.alpha.spring.example.mvc.mapping;
 
-import cardinal.alpha.spring.example.mvc.entity.File;
 import cardinal.alpha.spring.example.mvc.entity.GeoTag;
-import cardinal.alpha.spring.example.mvc.entity.Location;
-import cardinal.alpha.spring.example.mvc.entityDown.FileDownload;
 import cardinal.alpha.spring.example.mvc.entityDown.GeoTagDownload;
-import cardinal.alpha.spring.example.mvc.entityUp.FileUpload;
 import cardinal.alpha.spring.example.mvc.entityUp.GeoTagUpload;
-import cardinal.alpha.spring.example.mvc.mapping.type.BaseUploadableEntityMapper;
 import cardinal.alpha.spring.example.mvc.mapping.type.RestMapper;
 import cardinal.alpha.spring.example.mvc.mapping.type.UpdateMapping;
-import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
-import org.mapstruct.NullValueCheckStrategy;
-import org.mapstruct.NullValuePropertyMappingStrategy;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  *
  * @author Cardinal Alpha <renaldi96.aldi@gmail.com>
  */
-@Mapper(componentModel = "spring")
-public abstract class GeoTagMapper extends BaseUploadableEntityMapper implements UpdateMapping<GeoTag>,
-                                                                                    RestMapper<GeoTag, GeoTagUpload, GeoTagDownload>{
-    
-    @Autowired
-    private UpdateMapping<Location> locationUpdater;
-    
-    @Autowired
-    private UpdateMapping<File> fileUpdater;
-    
-    @Autowired
-    private RestMapper<File, FileUpload, FileDownload> fileMapper;
-    
-    protected void locationTransfer(Location src, @MappingTarget Location dest){
-        locationUpdater.updateEntity(src, dest);
-    }
-    
-    protected void fileTransfer(File src, @MappingTarget File dest){
-        fileUpdater.updateEntity(src, dest);
-    }
-
-    @Override
-    @BeanMapping(nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS,
-                    nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    @Mapping(source = "file", target = "file")
-    @Mapping(source = "location", target = "location")
-    public abstract void updateEntity(GeoTag updateData, @MappingTarget GeoTag oldEntity);
-    
-    protected FileDownload mapDownload(File src){
-        return fileMapper.mapDownload(src);
-    }
+@Mapper(componentModel = "spring", uses = {FileMapper.class, LocationMapper.class})
+public abstract class GeoTagMapper implements UpdateMapping<GeoTag>,
+                                              RestMapper<GeoTag, GeoTagUpload, GeoTagDownload>{
     
 }

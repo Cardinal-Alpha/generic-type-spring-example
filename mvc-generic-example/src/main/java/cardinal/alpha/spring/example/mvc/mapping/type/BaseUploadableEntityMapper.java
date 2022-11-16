@@ -27,6 +27,9 @@ import cardinal.alpha.spring.example.mvc.entity.File;
 import cardinal.alpha.spring.example.mvc.exception.MappingException;
 import java.io.InputStream;
 import java.sql.Blob;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.hibernate.engine.jdbc.BlobProxy;
 import org.mapstruct.Mapping;
 import org.springframework.web.multipart.MultipartFile;
@@ -38,7 +41,13 @@ import org.springframework.web.multipart.MultipartFile;
 public abstract class BaseUploadableEntityMapper{
     
     protected String generateUrl(File src){
-        return String.join("/", "/file", src.getId().toString());
+        try {
+            if(src.getContent().length() > 0)
+                return String.join("/", "/file", src.getId().toString());
+        } catch (SQLException ex) {
+            Logger.getLogger(BaseUploadableEntityMapper.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
     }
     
     protected Blob extractFileContent(MultipartFile file){
@@ -53,6 +62,6 @@ public abstract class BaseUploadableEntityMapper{
     @Mapping(source = "originalFilename", target = "name")
     @Mapping(source = "contentType", target = "mime")
     @Mapping(source = ".", target = "content")
-    protected abstract File mapUpload(MultipartFile file);
+    public abstract File mapUploadFile(MultipartFile file);
     
 }
